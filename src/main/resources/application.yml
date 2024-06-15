@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: petsore-data-service
+  r2dbc:
+    url: ${postgres-url}
+    username: ${postgres-username}
+    password: ${postgres-password}
