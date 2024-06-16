@@ -3,14 +3,12 @@ package com.coding2themax.petstore.data.repo;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.openapitools.client.model.Category;
 import org.openapitools.client.model.Pet;
 import org.openapitools.client.model.Tag;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class PetMapper {
@@ -32,8 +30,6 @@ public class PetMapper {
   }
 
   public static Pet toPet(Map<String, Object> petMap) {
-    // Implement the logic to convert the map to a Pet object
-    // ...
 
     Category category = new Category();
 
@@ -52,41 +48,16 @@ public class PetMapper {
     pet.setId(bd.longValue());
     pet.setName((String) petMap.get("name"));
     pet.setCategory(category);
-    // pet.setTags(List.of(tag));
-    // pet.setStatus(Pet.StatusEnum.valueOf((String) petMap.get("petstatus")));
     return pet;
 
   }
 
-  private static Category toCategory(Map<String, Object> categoryMap) {
-    // Implement the logic to convert the map to a Category object
-    // ...
-    return null;
+  public static Tag toTag(Map<String, Object> tagMap) {
+    BigDecimal bigDecimalCategory = (BigDecimal) tagMap.get("tagid");
+    return new Tag().id(bigDecimalCategory.longValue()).name((String) tagMap.get("tagname"));
   }
 
-  private static Tag toTag(Map<String, Object> tagMap) {
-    // Implement the logic to convert the map to a Tag object
-    // ...
-    if (tagMap.get("tagid") != null) {
-      BigDecimal bigDecimalCategory = (BigDecimal) tagMap.get("tagid");
-
-      return new Tag().id(bigDecimalCategory.longValue()).name((String) tagMap.get("tagname"));
-    }
-    return null;
-  }
-
-  private static Pet.StatusEnum toStatusEnum(Map<String, Object> statusEnumMap) {
-    // Implement the logic to convert the map to a StatusEnum object
-    // ...
-    return null;
-  }
-
-  private static String toPhotoUrls(Map<String, Object> photoUrlsMap) {
-    // Implement the logic to convert the map to a List<String> object
-    // ...
-    if (photoUrlsMap.get("photourl") != null) {
-      return (String) photoUrlsMap.get("photourl");
-    }
-    return null;
+  public static String toPhotoUrls(Map<String, Object> photoUrlsMap) {
+    return (String) photoUrlsMap.get("photourl");
   }
 }
