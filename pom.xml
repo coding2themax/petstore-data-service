@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.coding2themax.petstore</groupId>
-	<artifactId>petsore-data-service</artifactId>
+	<artifactId>petstore-data-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>petsore-data-service</name>
 	<description>Demo project for Spring Boot</description>
