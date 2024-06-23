@@ -19,4 +19,5 @@ public interface PetService {
    */
   Flux<Pet> findAllPets();
 
+  Mono<Pet> getPetById(Long id);
 }

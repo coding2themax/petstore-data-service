@@ -5,6 +5,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public class PetR2DBCService implements PetRepository {
@@ -28,6 +29,14 @@ public class PetR2DBCService implements PetRepository {
 
     return client.sql(QUERY).fetch().all().bufferUntilChanged(rs -> rs.get("petid"))
         .flatMap(PetMapper::toPetfromRows);
+  }
+
+  @Override
+  public Mono<Pet> getPetById(Long id) {
+    String query = String.format("%s where p.petid = :id", QUERY);
+    return client.sql(query).bind("id",
+        id).fetch().all().bufferUntilChanged(rs -> rs.get("petid"))
+        .flatMap(PetMapper::toPetfromRows).singleOrEmpty();
   }
 
 }

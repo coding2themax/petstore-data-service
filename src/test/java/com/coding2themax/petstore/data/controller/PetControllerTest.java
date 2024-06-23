@@ -1,6 +1,5 @@
 package com.coding2themax.petstore.data.controller;
 
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.openapitools.client.model.Pet;
@@ -37,7 +36,7 @@ public class PetControllerTest {
 
     BDDMockito.given(service.findAllPets()).willReturn(Flux.just(pet1, pet2));
 
-    this.webTestClient.get().uri("/pets/all").exchange().expectStatus().isOk().expectBodyList(Pet.class)
+    this.webTestClient.get().uri("/pet/all").exchange().expectStatus().isOk().expectBodyList(Pet.class)
         .hasSize(2).contains(pet1, pet2);
   }
 }
