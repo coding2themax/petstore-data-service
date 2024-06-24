@@ -1,7 +1,6 @@
 package com.coding2themax.petstore.data.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openapitools.client.model.Pet;
@@ -9,6 +8,7 @@ import org.openapitools.client.model.Pet;
 import com.coding2themax.petstore.data.repo.PetRepository;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import static org.mockito.Mockito.*;
 
@@ -59,5 +59,22 @@ public class PetStoreImplTest {
   }
 
   // Add more tests here...
+
+  @Test
+  void testGetPetById() {
+    // Mock the repository response
+    Pet pet = new Pet();
+    pet.setId(1L);
+    pet.setName("Max");
+    when(repository.getPetById(1L)).thenReturn(Mono.just(pet));
+
+    // Verify the result
+    StepVerifier.create(petStore.getPetById(1L))
+        .expectNext(pet)
+        .verifyComplete();
+
+    // Verify that the repository method was called
+    verify(repository, times(1)).getPetById(1L);
+  }
 
 }

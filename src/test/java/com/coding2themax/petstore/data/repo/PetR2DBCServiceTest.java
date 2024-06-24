@@ -27,4 +27,11 @@ public class PetR2DBCServiceTest {
     PetMapper petMapper = new PetMapper();
     Assertions.assertNotNull(petMapper);
   }
+
+  @Test
+  void testGetPetById() {
+    this.service.getPetById(1L).as(StepVerifier::create)
+        .expectNextCount(1)
+        .verifyComplete();
+  }
 }

@@ -11,6 +11,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import com.coding2themax.petstore.data.service.PetService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @WebFluxTest(controllers = PetController.class)
 public class PetControllerTest {
@@ -38,5 +39,19 @@ public class PetControllerTest {
 
     this.webTestClient.get().uri("/pet/all").exchange().expectStatus().isOk().expectBodyList(Pet.class)
         .hasSize(2).contains(pet1, pet2);
+  }
+
+  @Test
+  void testGetPetById() {
+
+    Pet pet = new Pet();
+    pet.setId(1L);
+    pet.setName("pet1");
+    pet.setStatus(Pet.StatusEnum.AVAILABLE);
+
+    BDDMockito.given(service.getPetById(1L)).willReturn(Mono.just(pet));
+
+    this.webTestClient.get().uri("/pet/1").exchange().expectStatus().isOk().expectBodyList(Pet.class)
+        .hasSize(1).contains(pet);
   }
 }
