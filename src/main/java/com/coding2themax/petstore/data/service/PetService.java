@@ -17,6 +17,9 @@ public interface PetService {
    * 
    * Flux<Pet> findPetsByStatus(String status);
    */
+
+  Flux<Pet> getPetsByStatus(Pet.StatusEnum status);
+
   Flux<Pet> findAllPets();
 
   Mono<Pet> getPetById(Long id);

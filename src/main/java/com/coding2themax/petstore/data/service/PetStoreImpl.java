@@ -1,6 +1,7 @@
 package com.coding2themax.petstore.data.service;
 
 import org.openapitools.client.model.Pet;
+import org.openapitools.client.model.Pet.StatusEnum;
 import org.springframework.stereotype.Service;
 
 import com.coding2themax.petstore.data.repo.PetRepository;
@@ -26,6 +27,11 @@ public class PetStoreImpl implements PetService {
   @Override
   public Mono<Pet> getPetById(Long id) {
     return repository.getPetById(id);
+  }
+
+  @Override
+  public Flux<Pet> getPetsByStatus(StatusEnum status) {
+    return repository.getPetsByStatus(status.getValue());
   }
 
 }

@@ -1,6 +1,7 @@
 package com.coding2themax.petstore.data.repo;
 
 import org.openapitools.client.model.Pet;
+import org.openapitools.client.model.Pet.StatusEnum;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
@@ -37,6 +38,16 @@ public class PetR2DBCService implements PetRepository {
     return client.sql(query).bind("id",
         id).fetch().all().bufferUntilChanged(rs -> rs.get("petid"))
         .flatMap(PetMapper::toPetfromRows).singleOrEmpty();
+  }
+
+  @Override
+  public Flux<Pet> getPetsByStatus(String petstatus) {
+
+    String query = String.format("%s where p.petstatus = \'%s\'", QUERY, petstatus);
+
+    return client.sql(query).fetch().all()
+        .bufferUntilChanged(rs -> rs.get("petid"))
+        .flatMap(PetMapper::toPetfromRows);
   }
 
 }

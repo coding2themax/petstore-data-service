@@ -30,4 +30,9 @@ public class PetController {
   public Mono<Pet> getPetById(@PathVariable(value = "petId") Long petId) {
     return service.getPetById(petId);
   }
+
+  @GetMapping("/status/{status}")
+  public Flux<Pet> getPetsByStatus(@PathVariable(value = "status") String status) {
+    return service.getPetsByStatus(Pet.StatusEnum.fromValue(status));
+  }
 }

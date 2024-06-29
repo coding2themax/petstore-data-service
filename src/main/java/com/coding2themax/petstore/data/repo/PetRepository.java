@@ -11,4 +11,6 @@ public interface PetRepository {
 
   Mono<Pet> getPetById(Long id);
 
+  Flux<Pet> getPetsByStatus(String status);
+
 }

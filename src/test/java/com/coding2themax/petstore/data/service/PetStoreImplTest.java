@@ -77,4 +77,25 @@ public class PetStoreImplTest {
     verify(repository, times(1)).getPetById(1L);
   }
 
+  @Test
+  void testGetPetsByStatus() {
+    // Mock the repository response
+    Pet pet1 = new Pet();
+    pet1.setId(1L);
+    pet1.setName("Max");
+    pet1.setStatus(Pet.StatusEnum.AVAILABLE);
+    Pet pet2 = new Pet();
+    pet2.setId(2L);
+    pet2.setName("Bella");
+    pet2.setStatus(Pet.StatusEnum.PENDING);
+    when(repository.getPetsByStatus(Pet.StatusEnum.AVAILABLE.getValue())).thenReturn(Flux.just(pet1));
+
+    // Verify the result
+    StepVerifier.create(petStore.getPetsByStatus(Pet.StatusEnum.AVAILABLE))
+        .expectNext(pet1)
+        .verifyComplete();
+
+    // Verify that the repository method was called
+    verify(repository, times(1)).getPetsByStatus(Pet.StatusEnum.AVAILABLE.getValue());
+  }
 }

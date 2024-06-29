@@ -54,4 +54,23 @@ public class PetControllerTest {
     this.webTestClient.get().uri("/pet/1").exchange().expectStatus().isOk().expectBodyList(Pet.class)
         .hasSize(1).contains(pet);
   }
+
+  @Test
+  void testGetPetsByStatus() {
+
+    Pet pet1 = new Pet();
+    pet1.setId(1L);
+    pet1.setName("pet1");
+    pet1.setStatus(Pet.StatusEnum.AVAILABLE);
+
+    Pet pet2 = new Pet();
+    pet2.setId(2L);
+    pet2.setName("pet2");
+    pet2.setStatus(Pet.StatusEnum.PENDING);
+
+    BDDMockito.given(service.getPetsByStatus(Pet.StatusEnum.AVAILABLE)).willReturn(Flux.just(pet1));
+
+    this.webTestClient.get().uri("/pet/status/available").exchange().expectStatus().isOk().expectBodyList(Pet.class)
+        .hasSize(1).contains(pet1);
+  }
 }
