@@ -1,5 +1,7 @@
 package com.coding2themax.petstore.data.service;
 
+import java.util.List;
+
 import org.openapitools.client.model.Pet;
 import org.openapitools.client.model.Pet.StatusEnum;
 import org.springframework.stereotype.Service;
@@ -30,8 +32,7 @@ public class PetStoreImpl implements PetService {
   }
 
   @Override
-  public Flux<Pet> getPetsByStatus(StatusEnum status) {
-    return repository.getPetsByStatus(status.getValue());
+  public Flux<Pet> getPetsByStatus(List<String> status) {
+    return repository.getPetsByStatus(status);
   }
-
 }

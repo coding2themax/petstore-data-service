@@ -1,5 +1,7 @@
 package com.coding2themax.petstore.data.controller;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.openapitools.client.model.Pet;
@@ -68,9 +70,10 @@ public class PetControllerTest {
     pet2.setName("pet2");
     pet2.setStatus(Pet.StatusEnum.PENDING);
 
-    BDDMockito.given(service.getPetsByStatus(Pet.StatusEnum.AVAILABLE)).willReturn(Flux.just(pet1));
+    BDDMockito.given(service.getPetsByStatus(List.of("available"))).willReturn(Flux.just(pet1));
 
-    this.webTestClient.get().uri("/pet/status/available").exchange().expectStatus().isOk().expectBodyList(Pet.class)
+    this.webTestClient.get().uri("/pet/findByStatus?status=available").exchange().expectStatus().isOk()
+        .expectBodyList(Pet.class)
         .hasSize(1).contains(pet1);
   }
 }

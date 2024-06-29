@@ -1,5 +1,7 @@
 package com.coding2themax.petstore.data.repo;
 
+import java.util.List;
+
 import org.openapitools.client.model.Pet;
 
 import reactor.core.publisher.Flux;
@@ -11,6 +13,6 @@ public interface PetRepository {
 
   Mono<Pet> getPetById(Long id);
 
-  Flux<Pet> getPetsByStatus(String status);
+  Flux<Pet> getPetsByStatus(List<String> status);
 
 }

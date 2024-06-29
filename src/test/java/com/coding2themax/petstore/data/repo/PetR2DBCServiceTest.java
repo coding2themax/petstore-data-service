@@ -1,5 +1,10 @@
 package com.coding2themax.petstore.data.repo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.Pet;
@@ -38,7 +43,17 @@ public class PetR2DBCServiceTest {
 
   @Test
   void testGetPetsByStatus() {
-    this.service.getPetsByStatus("available").as(StepVerifier::create)
+    this.service.getPetsByStatus(Collections.singletonList("available")).as(StepVerifier::create)
+        .expectNextCount(2)
+        .verifyComplete();
+  }
+
+  @Test
+  void testGetPetsByStatusEmpty() {
+
+    List<String> status = Arrays.asList("available", "pending");
+
+    this.service.getPetsByStatus(status).as(StepVerifier::create)
         .expectNextCount(2)
         .verifyComplete();
   }

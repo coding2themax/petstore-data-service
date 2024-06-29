@@ -1,5 +1,7 @@
 package com.coding2themax.petstore.data.service;
 
+import java.util.List;
+
 import org.openapitools.client.model.Pet;
 
 import reactor.core.publisher.Flux;
@@ -18,7 +20,7 @@ public interface PetService {
    * Flux<Pet> findPetsByStatus(String status);
    */
 
-  Flux<Pet> getPetsByStatus(Pet.StatusEnum status);
+  Flux<Pet> getPetsByStatus(List<String> status);
 
   Flux<Pet> findAllPets();
 

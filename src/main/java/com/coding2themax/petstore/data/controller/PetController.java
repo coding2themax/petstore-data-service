@@ -1,9 +1,12 @@
 package com.coding2themax.petstore.data.controller;
 
+import java.util.List;
+
 import org.openapitools.client.model.Pet;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.coding2themax.petstore.data.service.PetService;
@@ -31,8 +34,8 @@ public class PetController {
     return service.getPetById(petId);
   }
 
-  @GetMapping("/status/{status}")
-  public Flux<Pet> getPetsByStatus(@PathVariable(value = "status") String status) {
-    return service.getPetsByStatus(Pet.StatusEnum.fromValue(status));
+  @GetMapping("/findByStatus")
+  public Flux<Pet> getPetsByStatus(@RequestParam List<String> status) {
+    return service.getPetsByStatus(status);
   }
 }

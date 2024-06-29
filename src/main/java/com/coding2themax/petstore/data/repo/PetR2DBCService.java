@@ -1,5 +1,7 @@
 package com.coding2themax.petstore.data.repo;
 
+import java.util.List;
+
 import org.openapitools.client.model.Pet;
 import org.openapitools.client.model.Pet.StatusEnum;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -41,13 +43,26 @@ public class PetR2DBCService implements PetRepository {
   }
 
   @Override
-  public Flux<Pet> getPetsByStatus(String petstatus) {
+  public Flux<Pet> getPetsByStatus(List<String> petstatus) {
+    if (petstatus.size() == 1) {
+      String query = String.format("%s where p.petstatus = \'%s\'", QUERY, petstatus.get(0));
+      return client.sql(query).fetch().all()
+          .bufferUntilChanged(rs -> rs.get("petid"))
+          .flatMap(PetMapper::toPetfromRows);
+    } else {
+      // if more than one status is provided then use IN clause.
 
-    String query = String.format("%s where p.petstatus = \'%s\'", QUERY, petstatus);
+      String statues = petstatus.stream()
+          .collect(StringBuilder::new, (sb, s) -> sb.append("\'").append(s).append("\',"),
+              StringBuilder::append)
+          .toString();
+      String fomattedCorrectly = statues.substring(0, statues.length() - 1);
+      String query = String.format("%s where p.petstatus in (%s)", QUERY, fomattedCorrectly);
+      return client.sql(query).fetch().all()
+          .bufferUntilChanged(rs -> rs.get("petid"))
+          .flatMap(PetMapper::toPetfromRows);
+    }
 
-    return client.sql(query).fetch().all()
-        .bufferUntilChanged(rs -> rs.get("petid"))
-        .flatMap(PetMapper::toPetfromRows);
   }
 
 }

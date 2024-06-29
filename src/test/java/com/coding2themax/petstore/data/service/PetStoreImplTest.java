@@ -12,6 +12,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import static org.mockito.Mockito.*;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public class PetStoreImplTest {
 
   @Mock
@@ -88,14 +91,14 @@ public class PetStoreImplTest {
     pet2.setId(2L);
     pet2.setName("Bella");
     pet2.setStatus(Pet.StatusEnum.PENDING);
-    when(repository.getPetsByStatus(Pet.StatusEnum.AVAILABLE.getValue())).thenReturn(Flux.just(pet1));
+    when(repository.getPetsByStatus(Collections.singletonList("available"))).thenReturn(Flux.just(pet1));
 
     // Verify the result
-    StepVerifier.create(petStore.getPetsByStatus(Pet.StatusEnum.AVAILABLE))
+    StepVerifier.create(petStore.getPetsByStatus(Collections.singletonList("available")))
         .expectNext(pet1)
         .verifyComplete();
 
     // Verify that the repository method was called
-    verify(repository, times(1)).getPetsByStatus(Pet.StatusEnum.AVAILABLE.getValue());
+    verify(repository, times(1)).getPetsByStatus(Collections.singletonList("available"));
   }
 }
