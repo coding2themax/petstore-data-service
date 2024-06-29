@@ -3,7 +3,6 @@ package com.coding2themax.petstore.data.service;
 import java.util.List;
 
 import org.openapitools.client.model.Pet;
-import org.openapitools.client.model.Pet.StatusEnum;
 import org.springframework.stereotype.Service;
 
 import com.coding2themax.petstore.data.repo.PetRepository;
