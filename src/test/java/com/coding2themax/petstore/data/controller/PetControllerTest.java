@@ -76,4 +76,24 @@ public class PetControllerTest {
         .expectBodyList(Pet.class)
         .hasSize(1).contains(pet1);
   }
+
+  @Test
+  void testGetPetsByTags() {
+
+    Pet pet1 = new Pet();
+    pet1.setId(1L);
+    pet1.setName("pet1");
+    pet1.setStatus(Pet.StatusEnum.AVAILABLE);
+
+    Pet pet2 = new Pet();
+    pet2.setId(2L);
+    pet2.setName("pet2");
+    pet2.setStatus(Pet.StatusEnum.PENDING);
+
+    BDDMockito.given(service.getPetsByTags(List.of("tag1"))).willReturn(Flux.just(pet1));
+
+    this.webTestClient.get().uri("/pet/findByTags?tags=tag1").exchange().expectStatus().isOk()
+        .expectBodyList(Pet.class)
+        .hasSize(1).contains(pet1);
+  }
 }

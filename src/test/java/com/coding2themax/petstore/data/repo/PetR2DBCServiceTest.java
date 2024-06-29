@@ -57,4 +57,14 @@ public class PetR2DBCServiceTest {
         .expectNextCount(2)
         .verifyComplete();
   }
+
+  @Test
+  void testGetPetsByTags() {
+
+    List<String> tags = Arrays.asList("tag1", "tag2");
+
+    this.service.getPetsByTags(tags).as(StepVerifier::create)
+        .expectNextCount(1)
+        .verifyComplete();
+  }
 }

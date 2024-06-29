@@ -15,4 +15,6 @@ public interface PetRepository {
 
   Flux<Pet> getPetsByStatus(List<String> status);
 
+  Flux<Pet> getPetsByTags(List<String> tags);
+
 }

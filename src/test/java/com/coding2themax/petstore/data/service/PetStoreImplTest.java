@@ -1,19 +1,24 @@
 package com.coding2themax.petstore.data.service;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openapitools.client.model.Pet;
+import org.openapitools.client.model.Tag;
 
 import com.coding2themax.petstore.data.repo.PetRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import static org.mockito.Mockito.*;
-
-import java.util.Collection;
-import java.util.Collections;
 
 public class PetStoreImplTest {
 
@@ -100,5 +105,34 @@ public class PetStoreImplTest {
 
     // Verify that the repository method was called
     verify(repository, times(1)).getPetsByStatus(Collections.singletonList("available"));
+  }
+
+  @Test
+  void testGetPetsByTags() {
+    // Mock the repository response
+    Pet pet1 = new Pet();
+    pet1.setId(1L);
+    pet1.setName("Max");
+    Tag tag = new Tag();
+    tag.setId(1L);
+    tag.setName("dog");
+
+    pet1.setTags(Arrays.asList(tag));
+    Pet pet2 = new Pet();
+    pet2.setId(2L);
+    pet2.setName("Bella");
+    Tag catTag = new Tag();
+    catTag.setId(2L);
+    catTag.setName("cat");
+    pet2.setTags(Arrays.asList(catTag));
+    when(repository.getPetsByTags(Collections.singletonList("dog"))).thenReturn(Flux.just(pet1));
+
+    // Verify the result
+    StepVerifier.create(petStore.getPetsByTags(Collections.singletonList("dog")))
+        .expectNext(pet1)
+        .verifyComplete();
+
+    // Verify that the repository method was called
+    verify(repository, times(1)).getPetsByTags(Collections.singletonList("dog"));
   }
 }

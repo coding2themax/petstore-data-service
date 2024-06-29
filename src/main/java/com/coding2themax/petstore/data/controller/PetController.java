@@ -38,4 +38,9 @@ public class PetController {
   public Flux<Pet> getPetsByStatus(@RequestParam List<String> status) {
     return service.getPetsByStatus(status);
   }
+
+  @GetMapping("/findByTags")
+  public Flux<Pet> getPetsByTags(@RequestParam List<String> tags) {
+    return service.getPetsByTags(tags);
+  }
 }

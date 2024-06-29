@@ -35,4 +35,10 @@ public class PetStoreImpl implements PetService {
   public Flux<Pet> getPetsByStatus(List<String> status) {
     return repository.getPetsByStatus(status);
   }
+
+  @Override
+  public Flux<Pet> getPetsByTags(List<String> tags) {
+
+    return repository.getPetsByTags(tags);
+  }
 }

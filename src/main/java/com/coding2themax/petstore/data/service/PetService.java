@@ -19,6 +19,7 @@ public interface PetService {
    * 
    * Flux<Pet> findPetsByStatus(String status);
    */
+  Flux<Pet> getPetsByTags(List<String> tags);
 
   Flux<Pet> getPetsByStatus(List<String> status);
 

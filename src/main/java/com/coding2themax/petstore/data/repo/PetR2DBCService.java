@@ -3,7 +3,6 @@ package com.coding2themax.petstore.data.repo;
 import java.util.List;
 
 import org.openapitools.client.model.Pet;
-import org.openapitools.client.model.Pet.StatusEnum;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
@@ -63,6 +62,19 @@ public class PetR2DBCService implements PetRepository {
           .flatMap(PetMapper::toPetfromRows);
     }
 
+  }
+
+  @Override
+  public Flux<Pet> getPetsByTags(List<String> tags) {
+    String tagQuery = tags.stream()
+        .collect(StringBuilder::new, (sb, s) -> sb.append("\'").append(s).append("\',"),
+            StringBuilder::append)
+        .toString();
+    String fomattedCorrectly = tagQuery.substring(0, tagQuery.length() - 1);
+    String query = String.format("%s where tagname in (%s)", QUERY, fomattedCorrectly);
+    return client.sql(query).fetch().all()
+        .bufferUntilChanged(rs -> rs.get("petid"))
+        .flatMap(PetMapper::toPetfromRows);
   }
 
 }
