@@ -19,12 +19,15 @@ public class PetStatusConstraintValidator implements ConstraintValidator<PetStat
       return false;
     } else {
       for (String s : status) {
-        log.info("Status: {}", s);
         if (!Pet.StatusEnum.AVAILABLE.getValue().equals(s) && !Pet.StatusEnum.PENDING.getValue().equals(s)
             && !Pet.StatusEnum.SOLD.getValue().equals(s)) {
+          log.info("Status is : {}", false);
+
           return false;
         }
       }
+      log.info("Status is : {}", true);
+
       return true;
     }
   }

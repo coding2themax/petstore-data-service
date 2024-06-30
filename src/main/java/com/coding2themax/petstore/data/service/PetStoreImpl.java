@@ -5,6 +5,7 @@ import java.util.List;
 import org.openapitools.client.model.Pet;
 import org.springframework.stereotype.Service;
 
+import com.coding2themax.petstore.data.exception.StatusNotFoundException;
 import com.coding2themax.petstore.data.repo.PetRepository;
 
 import reactor.core.publisher.Flux;
@@ -32,7 +33,7 @@ public class PetStoreImpl implements PetService {
 
   @Override
   public Flux<Pet> getPetsByStatus(List<String> status) {
-    return repository.getPetsByStatus(status);
+    return repository.getPetsByStatus(status).switchIfEmpty(Mono.error(new StatusNotFoundException("No pets found")));
   }
 
   @Override
