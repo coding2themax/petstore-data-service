@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.coding2themax.petstore.data.service.PetService;
+import com.coding2themax.petstore.data.validation.PetStatusContraint;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/pet")
+@Slf4j
 public class PetController {
 
   private PetService service;
@@ -35,7 +38,8 @@ public class PetController {
   }
 
   @GetMapping("/findByStatus")
-  public Flux<Pet> getPetsByStatus(@RequestParam List<String> status) {
+  public Flux<Pet> getPetsByStatus(@RequestParam @PetStatusContraint List<String> status) {
+    log.info("Status: {}", status.size());
     return service.getPetsByStatus(status);
   }
 

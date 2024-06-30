@@ -2,6 +2,7 @@ package com.coding2themax.petstore.data.controller;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.openapitools.client.model.Pet;
@@ -23,6 +24,11 @@ public class PetControllerTest {
 
   @Autowired
   private WebTestClient webTestClient;
+
+  @BeforeEach
+  public void setUp() {
+    webTestClient = webTestClient.mutate().responseTimeout(java.time.Duration.ofMillis(60000)).build();
+  }
 
   @Test
   void testGetAllPets() {
@@ -75,6 +81,16 @@ public class PetControllerTest {
     this.webTestClient.get().uri("/pet/findByStatus?status=available").exchange().expectStatus().isOk()
         .expectBodyList(Pet.class)
         .hasSize(1).contains(pet1);
+  }
+
+  @Test
+  void testGetPetsByStatusBadParam() {
+    this.webTestClient.get().uri("/pet/findByStatus?status=fail").exchange().expectStatus().isBadRequest();
+  }
+
+  @Test
+  void testGetPetsByStatusNulParam() {
+    this.webTestClient.get().uri("/pet/findByStatus").exchange().expectStatus().isBadRequest();
   }
 
   @Test
