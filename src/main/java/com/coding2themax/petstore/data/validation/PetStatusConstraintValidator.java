@@ -15,21 +15,17 @@ public class PetStatusConstraintValidator implements ConstraintValidator<PetStat
   public boolean isValid(List<String> status, ConstraintValidatorContext ctx) {
     // log.info(status.toString());
 
-    if (status == null) {
-      return false;
-    } else {
-      for (String s : status) {
-        if (!Pet.StatusEnum.AVAILABLE.getValue().equals(s) && !Pet.StatusEnum.PENDING.getValue().equals(s)
-            && !Pet.StatusEnum.SOLD.getValue().equals(s)) {
-          log.info("Status is : {}", false);
+    for (String s : status) {
+      if (!Pet.StatusEnum.AVAILABLE.getValue().equals(s) && !Pet.StatusEnum.PENDING.getValue().equals(s)
+          && !Pet.StatusEnum.SOLD.getValue().equals(s)) {
+        log.info("Status is : {}", false);
 
-          return false;
-        }
+        return false;
       }
-      log.info("Status is : {}", true);
-
-      return true;
     }
+    log.info("Status is : {}", true);
+
+    return true;
   }
 
 }

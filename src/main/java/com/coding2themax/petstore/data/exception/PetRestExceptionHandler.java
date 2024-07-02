@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class PetRestExceptionHandler {
-  @ExceptionHandler(StatusNotFoundException.class)
-  ResponseEntity<String> handleStatusNotFoundException(StatusNotFoundException ex) {
 
-    return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
+  @ExceptionHandler(value = { StatusNotFoundException.class, TagNotFoundException.class })
+  ResponseEntity<String> handleStatusNotFoundException(StatusNotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
 }

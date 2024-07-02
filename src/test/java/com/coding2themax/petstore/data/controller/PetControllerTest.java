@@ -94,6 +94,12 @@ public class PetControllerTest {
   }
 
   @Test
+  void testGetPetsByStatusNotFound() {
+    BDDMockito.given(service.getPetsByStatus(List.of("available"))).willReturn(Flux.empty());
+    this.webTestClient.get().uri("/pet/findByStatus?status=available").exchange().expectStatus().isNotFound();
+  }
+
+  @Test
   void testGetPetsByTags() {
 
     Pet pet1 = new Pet();
