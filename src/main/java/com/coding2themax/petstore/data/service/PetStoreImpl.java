@@ -44,4 +44,11 @@ public class PetStoreImpl implements PetService {
     return repository.getPetsByTags(tags).switchIfEmpty(Mono.error(new TagNotFoundException("Invalid tag value")));
 
   }
+
+  @Override
+  public Mono<Pet> createPet(Pet pet) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'createPet'");
+  }
+
 }

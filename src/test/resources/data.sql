@@ -14,11 +14,13 @@
 --    limitations under the License.
 --
 
+
+
 DELETE FROM petstore.CATEGORY;
 DELETE FROM petstore.PET;
 DELETE FROM petstore.TAG;
 DELETE FROM petstore.PHOTO;
-
+DELETE FROM petstore.PETTAGS;
 
 INSERT INTO petstore.CATEGORY VALUES (1,'Fish','<image src="../images/fish_icon.gif"><font size="5" color="blue"> Fish</font>');
 INSERT INTO petstore.CATEGORY VALUES (2,'Dogs','<image src="../images/dogs_icon.gif"><font size="5" color="blue"> Dogs</font>');
@@ -33,7 +35,11 @@ INSERT INTO petstore.PHOTO  VALUES (3,2,'fish3.gif','image/gif',1000,'gif','2005
 INSERT INTO petstore.PET VALUES (1,1,'Angelfish','<image src="../images/fish1.gif">Salt Water fish from Australia', 'available');
 insert into petstore.PET VALUES (2,1,'Tiger Shark','<image src="../images/fish4.gif">Salt Water fish from Australia','available');    
 
-INSERT Into petstore.TAG VALUES (1,'tag1',1);
-INSERT Into petstore.TAG VALUES (2,'tag2',1);
-INSERT INTO petstore.TAG VALUES (3,'tag3',2);
-  
+INSERT Into petstore.TAG VALUES (1,'tag1');
+INSERT Into petstore.TAG VALUES (2,'tag2');
+INSERT INTO petstore.TAG VALUES (3,'tag3');
+
+INSERT INTO petstore.PETTAGS VALUES (1,1,'2005-02-16');
+INSERT INTO petstore.PETTAGS VALUES (1,2,'2005-02-16');
+INSERT INTO petstore.PETTAGS VALUES (2,3,'2005-02-16');
+

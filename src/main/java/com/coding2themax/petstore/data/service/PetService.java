@@ -4,15 +4,13 @@ import java.util.List;
 
 import org.openapitools.client.model.Pet;
 
-import com.coding2themax.petstore.data.exception.StatusNotFoundException;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface PetService {
 
   /*
-   * Mono<Pet> createPet(Pet pet);
+   * 
    * Mono<Pet> getPetById(Long id);
    * 
    * Mono<Pet> updatePet(Pet pet);
@@ -21,6 +19,9 @@ public interface PetService {
    * 
    * Flux<Pet> findPetsByStatus(String status);
    */
+
+  Mono<Pet> createPet(Pet pet);
+
   Flux<Pet> getPetsByTags(List<String> tags);
 
   Flux<Pet> getPetsByStatus(List<String> status);

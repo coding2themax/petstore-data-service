@@ -17,4 +17,6 @@ public interface PetRepository {
 
   Flux<Pet> getPetsByTags(List<String> tags);
 
+  Mono<Pet> createPet(Pet pet);
+
 }

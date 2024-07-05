@@ -3,7 +3,6 @@ package com.coding2themax.petstore.data.controller;
 import java.util.List;
 
 import org.openapitools.client.model.Pet;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

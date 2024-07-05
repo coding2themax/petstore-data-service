@@ -41,11 +41,12 @@ CREATE TABLE IF NOT EXISTS petstore.photo
 
 create table petstore.TAG (
     tagid NUMERIC(80) not null primary key,
-    tagname varchar(80) not null,
-    petid NUMERIC(10) not null
+    tagname varchar(80) not null
 );
 
-create TYPE petstore.STATUS AS ENUM ('available', 'pending', 'sold');
+
+
+create TYPE  petstore.STATUS AS ENUM ('available', 'pending', 'sold');
 create table petstore.PET (
     petid numeric(10,0) NOT NULL PRIMARY KEY, 
     category numeric(10,0) NOT NULL,
@@ -53,7 +54,14 @@ create table petstore.PET (
     descn character varying(255) COLLATE pg_catalog."default",
     petstatus petstore.status NOT NULL
 );
-
+CREATE TABLE petstore.PetTags (
+    petid NUMERIC(10) not null,
+    tagid NUMERIC(80),
+    date_assigned DATE,
+    PRIMARY KEY (petid, tagid),
+    FOREIGN KEY (petid) REFERENCES petstore.Pet(petid),
+    FOREIGN KEY (tagid) REFERENCES petstore.Tag(tagid)
+);
 DELETE FROM petstore.CATEGORY;
 DELETE FROM petstore.PET;
 DELETE FROM petstore.TAG;
@@ -73,6 +81,11 @@ INSERT INTO petstore.PHOTO  VALUES (3,2,'fish3.gif','image/gif',1000,'gif','2005
 INSERT INTO petstore.PET VALUES (1,1,'Angelfish','<image src="../images/fish1.gif">Salt Water fish from Australia', 'available');
 insert into petstore.PET VALUES (2,1,'Tiger Shark','<image src="../images/fish4.gif">Salt Water fish from Australia','available');    
 
-INSERT Into petstore.TAG VALUES (1,'tag1',1);
-INSERT Into petstore.TAG VALUES (2,'tag2',1);
-INSERT INTO petstore.TAG VALUES (3,'tag3',2);
+INSERT Into petstore.TAG VALUES (1,'tag1');
+INSERT Into petstore.TAG VALUES (2,'tag2');
+INSERT INTO petstore.TAG VALUES (3,'tag3');
+
+INSERT INTO petstore.PETTAGS VALUES (1,1,'2005-02-16');
+INSERT INTO petstore.PETTAGS VALUES (1,2,'2005-02-16');
+INSERT INTO petstore.PETTAGS VALUES (2,3,'2005-02-16');
+
