@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openapitools.client.model.Tag;
 import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.stereotype.Repository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,11 +13,12 @@ import reactor.core.publisher.Mono;
  * This class implements the TagRepository interface and provides the
  * implementation for working with tags in a R2DBC-based data service.
  */
-public class TagR2DBCService implements TagRepository {
+@Repository
+public class TagR2DBCRepo implements TagRepository {
 
   private final DatabaseClient client;
 
-  public TagR2DBCService(DatabaseClient client) {
+  public TagR2DBCRepo(DatabaseClient client) {
     this.client = client;
   }
 

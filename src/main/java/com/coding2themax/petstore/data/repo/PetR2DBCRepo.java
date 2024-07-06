@@ -10,7 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public class PetR2DBCService implements PetRepository {
+public class PetR2DBCRepo implements PetRepository {
 
   private final DatabaseClient client;
 
@@ -28,8 +28,11 @@ public class PetR2DBCService implements PetRepository {
       insert into petstore.pet (name, category, petstatus) values (:name, :category, :petstatus)
       """;
 
-  public PetR2DBCService(DatabaseClient client) {
+  private final TagRepository tagRepository;
+
+  public PetR2DBCRepo(DatabaseClient client, TagRepository tagRepository) {
     this.client = client;
+    this.tagRepository = tagRepository; // Initialize the tagRepository field
   }
 
   @Override
@@ -85,7 +88,10 @@ public class PetR2DBCService implements PetRepository {
 
   @Override
   public Mono<Pet> createPet(Pet pet) {
-    // TODO Auto-generated method stub
+    // TODO find tags for a pet if exist then add them to the pet tag table. If not
+    // create a new tag and add it to the pet tag table.
+
+    tagRepository.createTag(pet.getTags().get(0)).subscribe();
     throw new UnsupportedOperationException("Unimplemented method 'createPet'");
   }
 

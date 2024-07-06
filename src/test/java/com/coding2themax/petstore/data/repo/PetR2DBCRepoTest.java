@@ -14,10 +14,10 @@ import reactor.test.StepVerifier;
 
 @SpringBootTest
 @Testcontainers
-public class PetR2DBCServiceTest {
+public class PetR2DBCRepoTest {
 
   @Autowired
-  private PetR2DBCService service;
+  private PetR2DBCRepo service;
 
   @Test
   void testFindAllPets() {
