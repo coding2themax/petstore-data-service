@@ -14,6 +14,7 @@ import org.openapitools.client.model.Pet;
 import org.openapitools.client.model.Tag;
 
 import com.coding2themax.petstore.data.repo.PetRepository;
+import com.coding2themax.petstore.data.repo.TagRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,11 +25,13 @@ public class PetStoreImplTest {
   @Mock
   private PetRepository repository;
 
+  private TagRepository tagRepository;
+
   private PetStoreImpl petStore;
 
   public PetStoreImplTest() {
     MockitoAnnotations.openMocks(this);
-    petStore = new PetStoreImpl(repository);
+    petStore = new PetStoreImpl(repository, tagRepository);
   }
 
   @Test

@@ -1,7 +1,5 @@
 package com.coding2themax.petstore.data.repo;
 
-import java.util.List;
-
 import org.openapitools.client.model.Tag;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
@@ -39,8 +37,25 @@ public class TagR2DBCRepo implements TagRepository {
 
   @Override
   public Mono<Tag> createTag(Tag tag) {
+    return client.sql(CREATE_TAG_QUERY).bind("tagname", tag.getName()).fetch().rowsUpdated().map(count -> tag);
+  }
+
+  @Override
+  public Flux<Tag> getTags() {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'createTag'");
+    throw new UnsupportedOperationException("Unimplemented method 'getTags'");
+  }
+
+  @Override
+  public Flux<Tag> getTagsByPetId(Long petId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getTagsByPetId'");
+  }
+
+  @Override
+  public Flux<Tag> getTagsByTagName(String tagName) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getTagsByTagName'");
   }
 
 }

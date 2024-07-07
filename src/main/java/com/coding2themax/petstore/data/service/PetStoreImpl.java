@@ -1,13 +1,16 @@
 package com.coding2themax.petstore.data.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openapitools.client.model.Pet;
+import org.openapitools.client.model.Tag;
 import org.springframework.stereotype.Service;
 
 import com.coding2themax.petstore.data.exception.StatusNotFoundException;
 import com.coding2themax.petstore.data.exception.TagNotFoundException;
 import com.coding2themax.petstore.data.repo.PetRepository;
+import com.coding2themax.petstore.data.repo.TagRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,9 +19,11 @@ import reactor.core.publisher.Mono;
 public class PetStoreImpl implements PetService {
 
   private PetRepository repository;
+  private TagRepository tagRepository;
 
-  public PetStoreImpl(PetRepository repository) {
+  public PetStoreImpl(PetRepository repository, TagRepository tagRepository) {
     this.repository = repository;
+    this.tagRepository = tagRepository;
   }
 
   @Override
@@ -48,7 +53,20 @@ public class PetStoreImpl implements PetService {
   @Override
   public Mono<Pet> createPet(Pet pet) {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'createPet'");
+
+    // Find the tags in the database
+    List<Tag> tagNames = Optional.ofNullable(pet.getTags()).orElse(List.of());
+    if (!tagNames.isEmpty()) {
+      return Flux.fromIterable(tagNames).flatMap(tag -> tagRepository.createTag(tag))
+          .collectList().flatMap(tags -> {
+            pet.setTags(tags);
+            return repository.createPet(pet);
+          });
+    } else {
+      return repository.createPet(pet);
+    }
+
+    // throw new UnsupportedOperationException("Unimplemented method 'createPet'");
   }
 
 }
