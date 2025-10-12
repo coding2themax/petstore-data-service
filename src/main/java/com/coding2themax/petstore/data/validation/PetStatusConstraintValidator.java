@@ -3,13 +3,15 @@ package com.coding2themax.petstore.data.validation;
 import java.util.List;
 
 import org.openapitools.client.model.Pet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class PetStatusConstraintValidator implements ConstraintValidator<PetStatusContraint, List<String>> {
+
+  private static final Logger log = LoggerFactory.getLogger(PetStatusConstraintValidator.class);
 
   @Override
   public boolean isValid(List<String> status, ConstraintValidatorContext ctx) {

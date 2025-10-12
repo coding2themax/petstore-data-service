@@ -3,7 +3,8 @@ package com.coding2themax.petstore.data.controller;
 import java.util.List;
 
 import org.openapitools.client.model.Pet;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,15 +15,14 @@ import com.coding2themax.petstore.data.exception.StatusNotFoundException;
 import com.coding2themax.petstore.data.service.PetService;
 import com.coding2themax.petstore.data.validation.PetStatusContraint;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/pet")
-@Slf4j
 public class PetController {
 
+  private static final Logger log = LoggerFactory.getLogger(PetController.class);
   private PetService service;
 
   public PetController(PetService service) {
