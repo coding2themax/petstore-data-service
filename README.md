@@ -1,5 +1,7 @@
 # petstore-data-service
 
+[![codecov](https://codecov.io/github/coding2themax/petstore-data-service/graph/badge.svg)](https://codecov.io/github/coding2themax/petstore-data-service)![GitHub License](https://img.shields.io/github/license/coding2themax/petstore-data-service)
+
 petstore-data-service
 
 The petstore-data-service is a backend service that handles data management for the petstore application. It provides a set of APIs for creating, retrieving, updating, and deleting pet data.
