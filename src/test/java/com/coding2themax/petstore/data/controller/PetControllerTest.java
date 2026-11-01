@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.openapitools.client.model.Pet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.coding2themax.petstore.data.service.PetService;
@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @WebFluxTest(controllers = PetController.class)
 public class PetControllerTest {
 
-  @MockBean
+  @MockitoBean
   private PetService service;
 
   @Autowired
