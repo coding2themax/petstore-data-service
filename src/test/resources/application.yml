@@ -1,8 +1,0 @@
-spring:
-  r2dbc:
-    url: r2dbc:tc:postgresql:///test?TC_IMAGE_TAG=14
-    username: postgres
-    password: postgres
-  sql:
-    init:
-      mode: always

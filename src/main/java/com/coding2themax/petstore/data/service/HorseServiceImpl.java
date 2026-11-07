@@ -52,7 +52,10 @@ public class HorseServiceImpl implements HorseService {
 
   @Override
   public Mono<FeedingSchedule> addFeedingSchedule(Long horseId, FeedingSchedule schedule) {
-    return getHorseById(horseId).then(Mono.defer(() -> repository.addFeedingSchedule(horseId, schedule)));
+    return getHorseById(horseId)
+        .then(Mono.defer(() -> repository.addFeedingSchedule(horseId, schedule)))
+        // the horse was deleted after the check above
+        .switchIfEmpty(Mono.error(() -> horseNotFound(horseId)));
   }
 
   @Override

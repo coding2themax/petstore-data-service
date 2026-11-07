@@ -114,6 +114,13 @@ class HorseServiceImplTest {
   }
 
   @Test
+  void addFeedingScheduleHorseDeletedMeanwhile() {
+    when(repository.getHorseById(1L)).thenReturn(Mono.just(thunder));
+    when(repository.addFeedingSchedule(1L, hay)).thenReturn(Mono.empty());
+    StepVerifier.create(service.addFeedingSchedule(1L, hay)).verifyError(HorseNotFoundException.class);
+  }
+
+  @Test
   void deleteFeedingSchedule() {
     when(repository.deleteFeedingSchedule(1L, 1L)).thenReturn(Mono.just(true));
     StepVerifier.create(service.deleteFeedingSchedule(1L, 1L)).verifyComplete();

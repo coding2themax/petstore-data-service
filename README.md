@@ -19,7 +19,7 @@ This service will be using the swagger open api file from https://github.com/swa
 
 ## Horse feeding schedules
 
-The `/horse` routes store horses and their feeding schedules (tables `petstore.horse` and `petstore.feeding_schedule`).
+The `/horse` routes store horses and their feeding schedules. Each horse is one item in the DynamoDB `horse` table, with its feeding schedule stored inside it.
 
 | Method | Path | Description |
 | --- | --- | --- |
@@ -48,3 +48,35 @@ Example body for `POST /horse`:
 ```
 
 Unknown horses or feedings return `404`; invalid bodies (missing name, missing feeding time, non-positive quantity) return `400`.
+
+## Storage: AWS DynamoDB
+
+Data is stored in DynamoDB through the AWS SDK v2 enhanced async client.
+
+| Table | Key | Notes |
+| --- | --- | --- |
+| `<prefix>pet` | `petId` (N) | Category, photo URLs and tags are stored inside the item. The `status-index` GSI on `status` serves `/pet/findByStatus`, and the `tagNames` string set is used to filter by tag. |
+| `<prefix>horse` | `horseId` (N) | The feeding schedule is stored inside the item. A `version` attribute adds optimistic locking: concurrent changes are retried instead of overwriting each other. |
+| `<prefix>counter` | `name` (S) | Atomic counters that issue numeric ids for horses and feedings, because DynamoDB has no auto-increment. |
+
+### Configuration
+
+| Property | Environment variable | Default |
+| --- | --- | --- |
+| `petstore.dynamodb.region` | `AWS_REGION` | `us-east-1` |
+| `petstore.dynamodb.endpoint` | `DYNAMODB_ENDPOINT` | empty (uses AWS) |
+| `petstore.dynamodb.table-prefix` | `DYNAMODB_TABLE_PREFIX` | `petstore-` |
+| `petstore.dynamodb.access-key-id` / `secret-access-key` | `DYNAMODB_ACCESS_KEY_ID` / `DYNAMODB_SECRET_ACCESS_KEY` | empty (uses the default AWS credentials chain) |
+| `petstore.dynamodb.create-tables` | `DYNAMODB_CREATE_TABLES` | `false` |
+| `petstore.dynamodb.seed-data` | `DYNAMODB_SEED_DATA` | `false` |
+
+In AWS, create the tables with your infrastructure code using the definitions in `DynamoDbTableInitializer`, and give the service an IAM role. The role needs `GetItem`, `PutItem`, `DeleteItem`, `UpdateItem`, `Scan` and `Query` on the three tables and the `status-index` index. `create-tables` and `seed-data` are for local development and tests.
+
+### Running locally
+
+`docker compose up` starts DynamoDB Local (data is kept in a volume) and the service (build it first with `./mvnw package`). The service creates the tables and loads sample pets and horses.
+
+### Tests
+
+The repository tests use the `@DynamoDbTest` slice (`src/test/java/.../support`). It loads only the DynamoDB beans and repositories, against an `amazon/dynamodb-local` Testcontainers container, so Docker is needed to run `mvn verify`.
+
