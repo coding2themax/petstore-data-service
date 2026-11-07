@@ -1,10 +1,39 @@
+# Pick the storage with a profile:
+#   docker compose --profile postgres up
+#   docker compose --profile dynamodb up
+# Build the jar first with ./mvnw package.
 services:
-  app:
+  app-postgres:
+    profiles: [postgres]
     image: "pet-data-service"
     build:
       context: .
-    container_name: app
     environment:
+      DATABASE_HOST: "r2dbc:postgresql://db:5432/pet-service"
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: example
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - db
+  db:
+    profiles: [postgres]
+    image: pet-postgres
+    build:
+      context: ./postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+
+  app-dynamodb:
+    profiles: [dynamodb]
+    image: "pet-data-service"
+    build:
+      context: .
+    environment:
+      SPRING_PROFILES_ACTIVE: dynamodb
       AWS_REGION: us-east-1
       DYNAMODB_ENDPOINT: "http://dynamodb:8000"
       # DynamoDB Local accepts any credentials
@@ -18,6 +47,7 @@ services:
     depends_on:
       - dynamodb
   dynamodb:
+    profiles: [dynamodb]
     image: amazon/dynamodb-local:3.3.1
     # the data volume is owned by root, so DynamoDB Local must run as root to write to it
     user: root

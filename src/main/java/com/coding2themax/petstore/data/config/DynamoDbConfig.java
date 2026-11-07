@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClientBuilder;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DynamoDbProperties.class)
+@ConditionalOnDynamoDbStorage
 public class DynamoDbConfig {
 
   @Bean

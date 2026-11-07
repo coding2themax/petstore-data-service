@@ -27,8 +27,10 @@ import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import com.coding2themax.petstore.data.config.ConditionalOnDynamoDbStorage;
 
 @Repository
+@ConditionalOnDynamoDbStorage
 public class PetDynamoRepository implements PetRepository {
 
   private static final Comparator<Pet> BY_ID = Comparator.comparing(Pet::getId);

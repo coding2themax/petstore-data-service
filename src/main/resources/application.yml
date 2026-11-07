@@ -1,8 +1,16 @@
 spring:
   application:
     name: petsore-data-service
+  # Postgres connection, used when petstore.storage=postgres (the default)
+  r2dbc:
+    url: ${DATABASE_HOST}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
 
 petstore:
+  # where data is stored: postgres (default) or dynamodb.
+  # Use the "dynamodb" profile to switch, since it also turns off the Postgres auto-configuration.
+  storage: postgres
   dynamodb:
     region: ${AWS_REGION:us-east-1}
     # set to e.g. http://localhost:8000 to use DynamoDB Local; leave empty for AWS

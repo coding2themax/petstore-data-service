@@ -32,12 +32,13 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 /**
- * Loads sample pets and horses (the same data the Postgres init script used to load). Items that
+ * Loads sample pets and horses (the same data as postgres/init.sql). Items that
  * already exist are left alone, so restarting does not undo changes.
  */
 @Component
 @Order(1)
 @ConditionalOnBooleanProperty("petstore.dynamodb.seed-data")
+@ConditionalOnDynamoDbStorage
 public class DynamoDbSampleData implements ApplicationRunner {
 
   private final DynamoDbEnhancedAsyncClient client;

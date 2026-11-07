@@ -21,6 +21,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import com.coding2themax.petstore.data.config.ConditionalOnDynamoDbStorage;
 
 /**
  * Stores each horse as one DynamoDB item with its feeding schedule inside it. Every change is a
@@ -28,6 +29,7 @@ import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedExce
  * between, the change is retried on the fresh copy.
  */
 @Repository
+@ConditionalOnDynamoDbStorage
 public class HorseDynamoRepository implements HorseRepository {
 
   private static final Retry ON_CONFLICT = Retry.backoff(10, Duration.ofMillis(10))

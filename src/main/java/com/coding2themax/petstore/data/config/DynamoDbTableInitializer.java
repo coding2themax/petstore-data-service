@@ -36,6 +36,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 @Component
 @Order(0)
 @ConditionalOnBooleanProperty("petstore.dynamodb.create-tables")
+@ConditionalOnDynamoDbStorage
 public class DynamoDbTableInitializer implements ApplicationRunner {
 
   private static final Logger log = LoggerFactory.getLogger(DynamoDbTableInitializer.class);

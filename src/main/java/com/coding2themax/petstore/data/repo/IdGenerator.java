@@ -12,12 +12,14 @@ import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
+import com.coding2themax.petstore.data.config.ConditionalOnDynamoDbStorage;
 
 /**
  * Hands out increasing numeric ids from atomic counters in the counter table, because DynamoDB
  * has no auto-increment columns.
  */
 @Component
+@ConditionalOnDynamoDbStorage
 public class IdGenerator {
 
   public static final String HORSE = "horse";

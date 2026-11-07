@@ -49,9 +49,28 @@ Example body for `POST /horse`:
 
 Unknown horses or feedings return `404`; invalid bodies (missing name, missing feeding time, non-positive quantity) return `400`.
 
-## Storage: AWS DynamoDB
+## Storage: Postgres or AWS DynamoDB
 
-Data is stored in DynamoDB through the AWS SDK v2 enhanced async client.
+One build supports both. The `petstore.storage` setting picks which repository beans are created:
+
+| Mode | How to select | Repositories |
+| --- | --- | --- |
+| Postgres (default) | nothing, or `petstore.storage=postgres` | `PetR2DBCService`, `HorseR2DBCService` |
+| DynamoDB | `SPRING_PROFILES_ACTIVE=dynamodb` | `PetDynamoRepository`, `HorseDynamoRepository` |
+
+The `dynamodb` profile (`application-dynamodb.yml`) sets `petstore.storage=dynamodb` and turns off the R2DBC auto-configuration, so no Postgres connection is needed. Use the profile rather than setting the property alone. Beans for each mode are marked with `@ConditionalOnPostgresStorage` or `@ConditionalOnDynamoDbStorage`.
+
+Services and controllers depend only on the `PetRepository` and `HorseRepository` interfaces, so adding a storage type means adding implementations of those two interfaces.
+
+Run locally with `docker compose --profile postgres up` or `docker compose --profile dynamodb up` (build the jar first with `./mvnw package`).
+
+### Postgres
+
+Tables are defined in `src/main/resources/schema.sql` (local image: `postgres/init.sql`). Settings: `DATABASE_HOST` (an `r2dbc:postgresql://...` URL), `DATABASE_USERNAME`, `DATABASE_PASSWORD`.
+
+### DynamoDB
+
+Data is stored through the AWS SDK v2 enhanced async client.
 
 | Table | Key | Notes |
 | --- | --- | --- |
@@ -59,7 +78,7 @@ Data is stored in DynamoDB through the AWS SDK v2 enhanced async client.
 | `<prefix>horse` | `horseId` (N) | The feeding schedule is stored inside the item. A `version` attribute adds optimistic locking: concurrent changes are retried instead of overwriting each other. |
 | `<prefix>counter` | `name` (S) | Atomic counters that issue numeric ids for horses and feedings, because DynamoDB has no auto-increment. |
 
-### Configuration
+#### DynamoDB settings
 
 | Property | Environment variable | Default |
 | --- | --- | --- |
@@ -72,11 +91,14 @@ Data is stored in DynamoDB through the AWS SDK v2 enhanced async client.
 
 In AWS, create the tables with your infrastructure code using the definitions in `DynamoDbTableInitializer`, and give the service an IAM role. The role needs `GetItem`, `PutItem`, `DeleteItem`, `UpdateItem`, `Scan` and `Query` on the three tables and the `status-index` index. `create-tables` and `seed-data` are for local development and tests.
 
-### Running locally
-
-`docker compose up` starts DynamoDB Local (data is kept in a volume) and the service (build it first with `./mvnw package`). The service creates the tables and loads sample pets and horses.
+With the compose `dynamodb` profile, the service creates the tables in DynamoDB Local and loads sample pets and horses.
 
 ### Tests
 
-The repository tests use the `@DynamoDbTest` slice (`src/test/java/.../support`). It loads only the DynamoDB beans and repositories, against an `amazon/dynamodb-local` Testcontainers container, so Docker is needed to run `mvn verify`.
+Both storage types must behave the same, so the repository tests are written once, in `PetRepositoryContract` and `HorseRepositoryContract`, and run against each backend:
+
+- Postgres: `@DataR2dbcTest` slice against a Testcontainers Postgres (`PetR2DBCServiceTest`, `HorseR2DBCServiceTest`, which also checks transaction rollback).
+- DynamoDB: the `@DynamoDbTest` slice (`src/test/java/.../support`) against an `amazon/dynamodb-local` container (`PetDynamoRepositoryTest`, `HorseDynamoRepositoryTest`).
+
+`PostgresApiEndToEndTest` and `DynamoDbApiEndToEndTest` start the whole app in each mode and call the API over HTTP. Docker is needed to run `mvn verify`.
 

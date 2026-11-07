@@ -23,6 +23,7 @@ public interface HorseRepository {
 
   Flux<FeedingSchedule> getFeedingSchedules(Long horseId);
 
+  /** Adds one feeding. Empty if the horse does not exist. */
   Mono<FeedingSchedule> addFeedingSchedule(Long horseId, FeedingSchedule schedule);
 
   /** True if the feeding schedule existed for that horse and was deleted. */

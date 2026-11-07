@@ -1,47 +1,47 @@
 package com.coding2themax.petstore.data;
 
-import java.math.BigDecimal;
-import java.time.LocalTime;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.coding2themax.petstore.data.model.Horse;
-import com.coding2themax.petstore.data.support.DynamoDbLocalContainer;
+import com.coding2themax.petstore.data.repo.HorseRepository;
+import com.coding2themax.petstore.data.repo.PetRepository;
 
 /**
- * Starts the whole application on a random port against DynamoDB Local and drives the horse API
- * over HTTP.
+ * Starts the whole application against one storage backend and drives the API over HTTP. Each
+ * subclass picks the backend.
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-    "petstore.dynamodb.table-prefix=e2e-",
-    "petstore.dynamodb.access-key-id=test",
-    "petstore.dynamodb.secret-access-key=test",
-    "petstore.dynamodb.create-tables=true",
-    "petstore.dynamodb.seed-data=true" })
-@AutoConfigureWebTestClient
-class HorseApiEndToEndTest {
-
-  @TestConfiguration(proxyBeanMethods = false)
-  static class DynamoDbLocal {
-    @Bean
-    static DynamicPropertyRegistrar dynamoDbLocalEndpoint() {
-      return registry -> registry.add("petstore.dynamodb.endpoint", DynamoDbLocalContainer::endpoint);
-    }
-  }
+abstract class ApiEndToEndContract {
 
   @Autowired
-  private WebTestClient client;
+  protected WebTestClient client;
+
+  @Autowired
+  protected ApplicationContext context;
+
+  /** The repository classes the selected storage should provide. */
+  protected abstract List<Class<?>> expectedRepositories();
+
+  /** A bean type that must not exist when this storage is selected. */
+  protected abstract Class<?> otherStorageBean();
+
+  @Test
+  void onlyTheSelectedStorageIsWiredUp() {
+    assertEquals(expectedRepositories(), List.of(
+        AopUtils.getTargetClass(context.getBean(PetRepository.class)),
+        AopUtils.getTargetClass(context.getBean(HorseRepository.class))));
+    assertTrue(context.getBeansOfType(otherStorageBean()).isEmpty());
+  }
 
   @Test
   void horseLifecycleOverHttp() {
@@ -68,6 +68,10 @@ class HorseApiEndToEndTest {
 
     client.delete().uri("/horse/{id}", created.id()).exchange().expectStatus().isNoContent();
     client.get().uri("/horse/{id}", created.id()).exchange().expectStatus().isNotFound();
+    client.post().uri("/horse/{id}/feeding-schedule", created.id()).contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(Map.of("feedingTime", "05:00", "feedType", "Oats", "quantity", 1, "unit", "kg"))
+        .exchange()
+        .expectStatus().isNotFound();
   }
 
   @Test
@@ -75,6 +79,9 @@ class HorseApiEndToEndTest {
     client.get().uri("/pet/findByStatus?status=available").exchange()
         .expectStatus().isOk()
         .expectBody().jsonPath("$.length()").isEqualTo(2);
+    client.get().uri("/pet/findByTags?tags=tag3").exchange()
+        .expectStatus().isOk()
+        .expectBody().jsonPath("$[0].name").isEqualTo("Tiger Shark");
   }
 
   @Test
@@ -82,7 +89,8 @@ class HorseApiEndToEndTest {
     client.get().uri("/horse/1/feeding-schedule").exchange()
         .expectStatus().isOk()
         .expectBody()
-        .jsonPath("$[0].feedingTime").isEqualTo(LocalTime.of(7, 0).toString() + ":00")
-        .jsonPath("$[1].quantity").isEqualTo(new BigDecimal("2.5").doubleValue());
+        .jsonPath("$.length()").isEqualTo(2)
+        .jsonPath("$[0].feedingTime").isEqualTo("07:00:00")
+        .jsonPath("$[1].feedType").isEqualTo("Oats");
   }
 }

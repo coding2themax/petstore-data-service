@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 @Documented
 @Inherited
 @SpringBootTest(classes = DynamoDbTestConfiguration.class, webEnvironment = WebEnvironment.NONE, properties = {
+    "petstore.storage=dynamodb",
     "petstore.dynamodb.region=us-east-1",
     "petstore.dynamodb.table-prefix=test-",
     "petstore.dynamodb.access-key-id=test",
