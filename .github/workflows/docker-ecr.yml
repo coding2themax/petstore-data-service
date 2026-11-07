@@ -1,0 +1,94 @@
+name: Build and push Docker image to ECR
+
+# Builds the Spring Boot jar, packages it into a Docker image with the
+# repository's Dockerfile, and pushes the image to Amazon ECR.
+#
+# Required repository settings (Settings > Secrets and variables > Actions):
+#   Secret   AWS_ROLE_ARN    IAM role GitHub Actions assumes through OIDC
+#   Variable AWS_REGION      e.g. us-east-1
+#   Variable ECR_REPOSITORY  ECR repository name, e.g. petstore-data-service
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # needed to request the OIDC token for AWS
+
+concurrency:
+  group: ecr-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY || 'petstore-data-service' }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: "25"
+          distribution: "temurin"
+          cache: maven
+
+      # Runs the tests (Testcontainers uses the runner's Docker) so only
+      # a passing build gets pushed; produces target/*.jar for the Dockerfile.
+      - name: Build and test jar
+        run: ./mvnw -B verify
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker metadata (tags and labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          provenance: false # keeps ECR from listing an extra untagged manifest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        run: |
+          {
+            echo "### Pushed to Amazon ECR"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
