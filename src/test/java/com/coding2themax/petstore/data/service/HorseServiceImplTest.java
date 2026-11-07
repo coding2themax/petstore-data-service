@@ -95,8 +95,8 @@ class HorseServiceImplTest {
   @Test
   void getFeedingSchedulesHorseNotFound() {
     when(repository.getHorseById(1L)).thenReturn(Mono.empty());
-    when(repository.getFeedingSchedules(1L)).thenReturn(Flux.just(hay));
     StepVerifier.create(service.getFeedingSchedules(1L)).verifyError(HorseNotFoundException.class);
+    verify(repository, never()).getFeedingSchedules(1L);
   }
 
   @Test
@@ -109,9 +109,8 @@ class HorseServiceImplTest {
   @Test
   void addFeedingScheduleHorseNotFound() {
     when(repository.getHorseById(1L)).thenReturn(Mono.empty());
-    when(repository.addFeedingSchedule(1L, hay)).thenReturn(Mono.just(hay));
     StepVerifier.create(service.addFeedingSchedule(1L, hay)).verifyError(HorseNotFoundException.class);
-    verify(repository, never()).createHorse(ArgumentMatchers.any());
+    verify(repository, never()).addFeedingSchedule(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
   }
 
   @Test

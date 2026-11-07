@@ -47,12 +47,12 @@ public class HorseServiceImpl implements HorseService {
 
   @Override
   public Flux<FeedingSchedule> getFeedingSchedules(Long horseId) {
-    return getHorseById(horseId).thenMany(repository.getFeedingSchedules(horseId));
+    return getHorseById(horseId).thenMany(Flux.defer(() -> repository.getFeedingSchedules(horseId)));
   }
 
   @Override
   public Mono<FeedingSchedule> addFeedingSchedule(Long horseId, FeedingSchedule schedule) {
-    return getHorseById(horseId).then(repository.addFeedingSchedule(horseId, schedule));
+    return getHorseById(horseId).then(Mono.defer(() -> repository.addFeedingSchedule(horseId, schedule)));
   }
 
   @Override

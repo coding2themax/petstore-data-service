@@ -9,12 +9,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.Pet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
+import org.springframework.context.annotation.Import;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import reactor.test.StepVerifier;
 
-@SpringBootTest
+/**
+ * Integration test using the R2DBC test slice: only the R2DBC infrastructure, schema.sql/data.sql
+ * initialization and transactions are loaded, against a Testcontainers Postgres database.
+ */
+@DataR2dbcTest
+@Import(PetR2DBCService.class)
 @Testcontainers
 public class PetR2DBCServiceTest {
 

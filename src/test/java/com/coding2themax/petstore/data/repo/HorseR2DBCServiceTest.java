@@ -11,7 +11,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
+import org.springframework.context.annotation.Import;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.coding2themax.petstore.data.model.FeedingSchedule;
@@ -19,7 +20,12 @@ import com.coding2themax.petstore.data.model.Horse;
 
 import reactor.test.StepVerifier;
 
-@SpringBootTest
+/**
+ * Integration test using the R2DBC test slice: only the R2DBC infrastructure, schema.sql/data.sql
+ * initialization and transactions are loaded, against a Testcontainers Postgres database.
+ */
+@DataR2dbcTest
+@Import(HorseR2DBCService.class)
 @Testcontainers
 class HorseR2DBCServiceTest {
 
@@ -122,5 +128,45 @@ class HorseR2DBCServiceTest {
     StepVerifier.create(repository.deleteFeedingSchedule(horse.id(), added.id())).expectNext(true).verifyComplete();
     StepVerifier.create(repository.deleteFeedingSchedule(horse.id(), added.id())).expectNext(false).verifyComplete();
     StepVerifier.create(repository.getFeedingSchedules(horse.id())).verifyComplete();
+  }
+
+  @Test
+  void createHorseRollsBackWhenAScheduleFailsToSave() {
+    // a non-positive quantity skips bean validation here but breaks the database check constraint
+    FeedingSchedule invalid = new FeedingSchedule(null, null, LocalTime.NOON, "Hay", BigDecimal.ZERO, "kg", null);
+    Horse horse = new Horse(null, "Rollback", null, null, null, List.of(schedule(8, "Hay", null), invalid));
+
+    StepVerifier.create(repository.createHorse(horse)).expectError().verify();
+
+    StepVerifier.create(repository.findAllHorses().filter(h -> "Rollback".equals(h.name())))
+        .verifyComplete();
+  }
+
+  @Test
+  void updateHorseRollsBackWhenAScheduleFailsToSave() {
+    FeedingSchedule invalid = new FeedingSchedule(null, null, LocalTime.NOON, "Hay", BigDecimal.ZERO, "kg", null);
+    Horse original = repository.createHorse(new Horse(null, "Steady", null, null, null,
+        List.of(schedule(7, "Hay", null)))).block();
+    assertNotNull(original);
+
+    StepVerifier.create(repository.updateHorse(original.id(),
+        new Horse(null, "Renamed", null, null, null, List.of(invalid)))).expectError().verify();
+
+    StepVerifier.create(repository.getHorseById(original.id()))
+        .assertNext(horse -> {
+          assertEquals("Steady", horse.name());
+          assertEquals(List.of("Hay"), horse.feedingSchedules().stream().map(FeedingSchedule::feedType).toList());
+        })
+        .verifyComplete();
+  }
+
+  @Test
+  void getHorseWithoutSchedulesReturnsEmptyList() {
+    Horse created = repository.createHorse(new Horse(null, "Bare", null, null, null, null)).block();
+    assertNotNull(created);
+
+    StepVerifier.create(repository.getHorseById(created.id()))
+        .assertNext(horse -> assertTrue(horse.feedingSchedules().isEmpty()))
+        .verifyComplete();
   }
 }
