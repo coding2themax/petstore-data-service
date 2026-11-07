@@ -1,0 +1,13 @@
+# Activate with SPRING_PROFILES_ACTIVE=dynamodb to store data in DynamoDB instead of Postgres.
+petstore:
+  storage: dynamodb
+
+spring:
+  autoconfigure:
+    # no Postgres in this mode, so do not set up an R2DBC connection, schema init or transactions
+    exclude:
+      - org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
+      - org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration
+      - org.springframework.boot.r2dbc.autoconfigure.R2dbcTransactionManagerAutoConfiguration
+      - org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcAutoConfiguration
+      - org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcRepositoriesAutoConfiguration

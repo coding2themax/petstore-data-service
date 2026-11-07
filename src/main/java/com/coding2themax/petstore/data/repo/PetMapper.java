@@ -33,7 +33,7 @@ public class PetMapper {
 
     Category category = new Category();
 
-    BigDecimal bigDecimalCategory = (BigDecimal) petMap.get("petid");
+    BigDecimal bigDecimalCategory = (BigDecimal) petMap.get("category");
     category.setId(bigDecimalCategory.longValue());
     category.setName((String) petMap.get("category_name"));
 

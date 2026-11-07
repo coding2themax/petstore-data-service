@@ -1,76 +1,30 @@
 package com.coding2themax.petstore.data.repo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.model.Pet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import reactor.test.StepVerifier;
 
 /**
- * Integration test using the R2DBC test slice: only the R2DBC infrastructure, schema.sql/data.sql
- * initialization and transactions are loaded, against a Testcontainers Postgres database.
+ * Runs the pet repository contract against Postgres, using the R2DBC test slice: only the R2DBC
+ * infrastructure, schema.sql/data.sql initialization and transactions are loaded, against a
+ * Testcontainers Postgres database.
  */
 @DataR2dbcTest
 @Import(PetR2DBCService.class)
-@Testcontainers
-public class PetR2DBCServiceTest {
+class PetR2DBCServiceTest extends PetRepositoryContract {
 
   @Autowired
-  private PetR2DBCService service;
+  private PetR2DBCService repository;
 
-  @Test
-  void testFindAllPets() {
-    this.service.findAllPets().as(StepVerifier::create)
-        .expectNextCount(2)
-        .verifyComplete();
+  @Override
+  protected PetRepository repository() {
+    return repository;
   }
 
   @Test
-  void testContructor() {
-    PetMapper petMapper = new PetMapper();
-    Assertions.assertNotNull(petMapper);
-  }
-
-  @Test
-  void testGetPetById() {
-    this.service.getPetById(1L).as(StepVerifier::create)
-        .expectNextCount(1)
-        .verifyComplete();
-  }
-
-  @Test
-  void testGetPetsByStatus() {
-    this.service.getPetsByStatus(Collections.singletonList("available")).as(StepVerifier::create)
-        .expectNextCount(2)
-        .verifyComplete();
-  }
-
-  @Test
-  void testGetPetsByStatusEmpty() {
-
-    List<String> status = Arrays.asList("available", "pending");
-
-    this.service.getPetsByStatus(status).as(StepVerifier::create)
-        .expectNextCount(2)
-        .verifyComplete();
-  }
-
-  @Test
-  void testGetPetsByTags() {
-
-    List<String> tags = Arrays.asList("tag1", "tag2");
-
-    this.service.getPetsByTags(tags).as(StepVerifier::create)
-        .expectNextCount(1)
-        .verifyComplete();
+  void mapperCanBeCreated() {
+    Assertions.assertNotNull(new PetMapper());
   }
 }

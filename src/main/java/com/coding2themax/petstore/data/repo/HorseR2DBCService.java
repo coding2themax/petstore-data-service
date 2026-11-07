@@ -10,8 +10,10 @@ import com.coding2themax.petstore.data.model.Horse;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import com.coding2themax.petstore.data.config.ConditionalOnPostgresStorage;
 
 @Repository
+@ConditionalOnPostgresStorage
 public class HorseR2DBCService implements HorseRepository {
 
   private static final String HORSE_QUERY = """
@@ -105,7 +107,8 @@ public class HorseR2DBCService implements HorseRepository {
   public Mono<FeedingSchedule> addFeedingSchedule(Long horseId, FeedingSchedule schedule) {
     GenericExecuteSpec insert = client.sql("""
         insert into petstore.feeding_schedule (horseid, feedtime, feedtype, quantity, unit, notes)
-        values (:horseId, :feedTime, :feedType, :quantity, :unit, :notes)
+        select :horseId, :feedTime, :feedType, :quantity, :unit, :notes
+         where exists (select 1 from petstore.horse where horseid = :horseId)
         returning scheduleid
         """)
         .bind("horseId", horseId)
