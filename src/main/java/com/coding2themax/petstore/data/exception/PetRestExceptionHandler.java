@@ -13,4 +13,9 @@ public class PetRestExceptionHandler {
   ResponseEntity<String> handleStatusNotFoundException(StatusNotFoundException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
+
+  @ExceptionHandler(HorseNotFoundException.class)
+  ResponseEntity<String> handleHorseNotFoundException(HorseNotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+  }
 }
