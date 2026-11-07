@@ -36,4 +36,12 @@ insert into petstore.PET VALUES (2,1,'Tiger Shark','<image src="../images/fish4.
 INSERT Into petstore.TAG VALUES (1,'tag1',1);
 INSERT Into petstore.TAG VALUES (2,'tag2',1);
 INSERT INTO petstore.TAG VALUES (3,'tag3',2);
-  
+
+TRUNCATE petstore.horse RESTART IDENTITY CASCADE;
+
+INSERT INTO petstore.horse (name, breed, age, owner) VALUES ('Thunder', 'Thoroughbred', 7, 'Alex');
+INSERT INTO petstore.horse (name, breed, age, owner) VALUES ('Daisy', 'Quarter Horse', 12, 'Sam');
+
+INSERT INTO petstore.feeding_schedule (horseid, feedtime, feedtype, quantity, unit, notes) VALUES (1, '07:00', 'Hay', 5.00, 'kg', 'Morning feed');
+INSERT INTO petstore.feeding_schedule (horseid, feedtime, feedtype, quantity, unit, notes) VALUES (1, '18:00', 'Oats', 2.50, 'kg', NULL);
+INSERT INTO petstore.feeding_schedule (horseid, feedtime, feedtype, quantity, unit, notes) VALUES (2, '08:00', 'Hay', 4.00, 'kg', NULL);

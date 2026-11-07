@@ -16,3 +16,35 @@ Key Features:
 Please refer to the documentation for detailed information on how to use the petstore-data-service and its APIs.
 
 This service will be using the swagger open api file from https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml
+
+## Horse feeding schedules
+
+The `/horse` routes store horses and their feeding schedules (tables `petstore.horse` and `petstore.feeding_schedule`).
+
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/horse/all` | All horses with their feeding schedules |
+| GET | `/horse/{horseId}` | One horse with its feeding schedule |
+| POST | `/horse` | Create a horse (feeding schedules optional) |
+| PUT | `/horse/{horseId}` | Update a horse and replace its feeding schedules |
+| DELETE | `/horse/{horseId}` | Delete a horse and its feeding schedules |
+| GET | `/horse/{horseId}/feeding-schedule` | A horse's feedings, in time order |
+| POST | `/horse/{horseId}/feeding-schedule` | Add one feeding |
+| DELETE | `/horse/{horseId}/feeding-schedule/{scheduleId}` | Remove one feeding |
+
+Example body for `POST /horse`:
+
+```json
+{
+  "name": "Thunder",
+  "breed": "Thoroughbred",
+  "age": 7,
+  "owner": "Alex",
+  "feedingSchedules": [
+    { "feedingTime": "07:00", "feedType": "Hay", "quantity": 5, "unit": "kg", "notes": "Morning feed" },
+    { "feedingTime": "18:00", "feedType": "Oats", "quantity": 2.5, "unit": "kg" }
+  ]
+}
+```
+
+Unknown horses or feedings return `404`; invalid bodies (missing name, missing feeding time, non-positive quantity) return `400`.
