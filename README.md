@@ -48,3 +48,18 @@ Example body for `POST /horse`:
 ```
 
 Unknown horses or feedings return `404`; invalid bodies (missing name, missing feeding time, non-positive quantity) return `400`.
+
+## Docker image on Amazon ECR
+
+`.github/workflows/docker-ecr.yml` builds and tests the jar, builds the Docker image from the `Dockerfile`, and pushes it to Amazon ECR. It runs on pushes to `main`, on `v*` tags, and on demand from the Actions tab.
+
+Images are tagged with the full commit SHA, the branch name, `latest` (on `main`), and the version for `v*` tags (e.g. `v1.2.0` → `1.2.0` and `1.2`).
+
+One-time setup:
+
+1. Create the ECR repository (e.g. `aws ecr create-repository --repository-name petstore-data-service`).
+2. In IAM, add GitHub's OIDC provider (`token.actions.githubusercontent.com`, audience `sts.amazonaws.com`) and a role it can assume, limited to this repository (`repo:coding2themax/petstore-data-service:*`). Give the role permission to push to the ECR repository (`ecr:GetAuthorizationToken` plus the push actions, e.g. the `AmazonEC2ContainerRegistryPowerUser` managed policy).
+3. In GitHub, under Settings → Secrets and variables → Actions, add:
+   - secret `AWS_ROLE_ARN`: the role's ARN
+   - variable `AWS_REGION`: e.g. `us-east-1` (default if unset)
+   - variable `ECR_REPOSITORY`: e.g. `petstore-data-service` (default if unset)
